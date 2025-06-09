@@ -1,15 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
+import os
 
 app = Flask(__name__)
 CORS(app)
 
-
-import os
+# Get your API token from the environment variable
 TRAVELPAYOUTS_TOKEN = os.getenv("TRAVELPAYOUTS_TOKEN")
-
-
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -38,8 +36,7 @@ def predict():
 
     try:
         full_data = response.json()
-        route_key = f"{origin}-{destination}"
-        results = full_data.get("data", {}).get(route_key, [])
+        results = full_data.get("data", [])
 
         if not results:
             return jsonify({'error': 'No flights found'}), 404
@@ -52,7 +49,6 @@ def predict():
 
     except Exception as e:
         return jsonify({'error': 'Failed to parse API result', 'details': str(e)}), 500
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
