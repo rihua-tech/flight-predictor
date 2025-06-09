@@ -6,7 +6,6 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# Get your API token from the environment variable
 TRAVELPAYOUTS_TOKEN = os.getenv("TRAVELPAYOUTS_TOKEN")
 
 @app.route('/predict', methods=['POST'])
@@ -20,7 +19,6 @@ def predict():
         return jsonify({'error': 'Missing input'}), 400
 
     month = date[:7]  # format YYYY-MM
-
     api_url = "https://api.travelpayouts.com/v2/prices/month-matrix"
     params = {
         "currency": "usd",
@@ -36,15 +34,16 @@ def predict():
 
     try:
         full_data = response.json()
+        # Travelpayouts returns a list under "data"
         results = full_data.get("data", [])
 
-        if not results:
+        if not isinstance(results, list) or not results:
             return jsonify({'error': 'No flights found'}), 404
 
-        best_day = min(results, key=lambda f: f["value"])
+        best_day = min(results, key=lambda f: f.get("value", float('inf')))
         return jsonify({
-            "date": best_day["depart_date"],
-            "savings": f"${best_day['value']}"
+            "date": best_day.get("depart_date"),
+            "savings": f"${best_day.get('value')}"
         })
 
     except Exception as e:
