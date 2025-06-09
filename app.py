@@ -5,7 +5,11 @@ import requests
 app = Flask(__name__)
 CORS(app)
 
-TRAVELPAYOUTS_TOKEN = '0f38962d95c23908fd9cdc1ed81d518b'
+
+import os
+TRAVELPAYOUTS_TOKEN = os.getenv("TRAVELPAYOUTS_TOKEN")
+
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
