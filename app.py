@@ -53,11 +53,13 @@ def predict():
         return jsonify({
             "date": best_date,
             "savings": str(best_price),
-            "forecast": forecast_percent,
+            "forecast_percent": forecast_percent,
             "forecast_days": forecast_days,
             "ai_savings": ai_savings,
             "ai_days": ai_days
         })
+
+
 
     except Exception as e:
         return jsonify({'error': 'Failed to parse API result', 'details': str(e)}), 500
