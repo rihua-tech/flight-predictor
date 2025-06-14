@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify 
 from flask_cors import CORS
 import requests
 import os
@@ -34,16 +34,29 @@ def predict():
 
     try:
         full_data = response.json()
-        # Travelpayouts returns a list under "data"
         results = full_data.get("data", [])
 
         if not isinstance(results, list) or not results:
             return jsonify({'error': 'No flights found'}), 404
 
+        # 🟡 Find best date by lowest price
         best_day = min(results, key=lambda f: f.get("value", float('inf')))
+        best_price = best_day.get("value")
+        best_date = best_day.get("depart_date")
+
+        # 🔮 Optional: Fake AI logic (for now)
+        forecast_percent = "80%"
+        forecast_days = 3
+        ai_days = 3
+        ai_savings = 240
+
         return jsonify({
-            "date": best_day.get("depart_date"),
-            "savings": f"${best_day.get('value')}"
+            "date": best_date,
+            "savings": str(best_price),
+            "forecast": forecast_percent,
+            "forecast_days": forecast_days,
+            "ai_savings": ai_savings,
+            "ai_days": ai_days
         })
 
     except Exception as e:
